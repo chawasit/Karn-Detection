@@ -1,15 +1,48 @@
 import utils
+import numpy as np
 
 
 class KeyPoint:
     def __init__(self, keypoint_vector):
         self.key_points = utils.split_list(keypoint_vector, 3)
 
-    def box(self):
+    def box(self, ratio=0.1):
         xs = [int(key[0]) for key in self.key_points]
         ys = [int(key[1]) for key in self.key_points]
 
-        return min(xs), max(xs), min(ys), max(ys)
+        x = min(xs)
+        y = min(ys)
+
+        height = max(ys) - y
+        width = max(xs) - x 
+
+        x_offset = width * ratio
+        y_offset = height * ratio
+
+        return int(y - y_offset), int(x - x_offset) \
+               , int(height + 2 * y_offset), int(width + 2 * x_offset)
+
+    def head(self, ratio=0.1):
+        key_points = [self.left_ear(), self.right_ear(), 
+                      self.left_eye(), self.right_eye(),
+                      self.nose()]
+
+        xs = [int(key[0]) for key in key_points]
+        ys = [int(key[1]) for key in key_points]
+
+        x = min(xs)
+        y = min(ys)
+
+        height = (max(ys) - y) * 5
+        width = max(xs) - x 
+
+        y -= height * 0.3
+
+        x_offset = width * ratio
+        y_offset = height * ratio
+
+        return int(y - y_offset), int(x - x_offset) \
+               , int(height + 2 * y_offset), int(width + 2 * x_offset)
 
     def nose(self):
         return self.key_points[0]
@@ -70,6 +103,79 @@ class KeyPoint:
 
     def __str__(self):
         return str(self.key_points)
+
+    def _angle(self, a, b, c, confident):
+        if a[2] < confident or b[2] < confident or c[2] < confident:
+            return None
+
+        ba = np.subtract(a, b)
+        bc = np.subtract(c, b)
+        
+        return utils.angle_between_vectors_degrees(ba[:-1], bc[:-1])
+
+    def left_elbow_angle(self, confident=0.5):
+        return self._angle(
+            self.left_wrist(),
+            self.left_elbow(),
+            self.left_shoulder(),
+            confident
+        )
+    
+    def right_elbow_angle(self, confident=0.5):
+        return self._angle(
+            self.right_wrist(),
+            self.right_elbow(),
+            self.right_shoulder(),
+            confident
+        )
+
+    def left_shoulder_angle(self, confident=0.5):
+        return self._angle(
+            self.left_elbow(),
+            self.left_shoulder(),
+            self.neck(),
+            confident
+        )
+    
+    def right_shoulder_angle(self, confident=0.5):
+        return self._angle(
+            self.right_elbow(),
+            self.right_shoulder(),
+            self.neck(),
+            confident
+        )
+
+    def left_knee_angle(self, confident=0.5):
+        return self._angle(
+            self.left_hip(),
+            self.left_knee(),
+            self.left_ankle(),
+            confident
+        )
+    
+    def right_knee_angle(self, confident=0.5):
+        return self._angle(
+            self.right_hip(),
+            self.right_knee(),
+            self.right_ankle(),
+            confident
+        )
+
+    def left_hip_angle(self, confident=0.5):
+        return self._angle(
+            self.neck(),
+            self.left_hip(),
+            self.left_knee(),
+            confident
+        )
+    
+    def right_hip_angle(self, confident=0.5):
+        return self._angle(
+            self.neck(),
+            self.right_hip(),
+            self.right_knee(),
+            confident
+        )
 
 
 if __name__ == '__main__':

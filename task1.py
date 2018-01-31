@@ -4,7 +4,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 import json
 import models
-
+import face_recognition
 
 def plot_color_histogram(image):
     chans = cv2.split(image)
@@ -37,7 +37,7 @@ def plot_color_histogram(image):
 
     plt.show()
 
-    return np.array(features).flatten().shape
+    return np.array(features).flatten()
 
 
 if __name__ == '__main__':
@@ -46,19 +46,21 @@ if __name__ == '__main__':
     #     print "not open"
     image = cv2.imread("frame574.jpg")
 
-    with open("Squat1_8_9_000000000574_keypoints.json", 'r') as f:
+    with open("squat/Squat1_8_9_000000000574_keypoints.json", 'r') as f:
         pose_result = json.loads(f.read())
 
     key_point = models.KeyPoint(pose_result['people'][0]['pose_keypoints'])
-    x_min, x_max, y_min, y_max = key_point.box()
-    height, width = x_max - x_min, y_max - y_min
+    # x_min, y_min, height, width = key_point.head(0.1)
+    # print x_min, y_min, height, width
 
-    print x_min, y_min, height, width
+    # cropped = utils.crop_image(image, x_min, y_min, height, width)
+    # print face_recognition.face_landmarks(cropped)
+    # cv2.imshow("cropped", cropped)
 
-    cropped = utils.crop_image(image, y_min, x_min, width, height)
+    # print plot_color_histogram(cv2.cvtColor(cropped, cv2.COLOR_BGR2HSV))
+    # print plot_color_histogram(cropped)
 
-    cv2.imshow("cropped", cropped)
+    print utils.angle_between_vectors_degrees()
 
-    plot_color_histogram(cropped)
 
     cv2.waitKey()
