@@ -6,15 +6,24 @@ class KeyPoint:
     def __init__(self, keypoint_vector):
         self.key_points = utils.split_list(keypoint_vector, 3)
 
-    def box(self, ratio=0.1):
-        xs = [int(key[0]) for key in self.key_points]
-        ys = [int(key[1]) for key in self.key_points]
+    def average_confident(self):
+        return np.average(map(lambda x: x[2], self.key_points))
 
+    def box(self, ratio=0.3):
+        xs = [int(key[0]) for key in self.key_points if key[2] > 0]
+        ys = [int(key[1]) for key in self.key_points if key[2] > 0]
+
+        if len(xs) == 0 or len(ys) == 0:
+            return None, None, None, None
+            
         x = min(xs)
         y = min(ys)
 
         height = max(ys) - y
         width = max(xs) - x 
+
+        if height < 10 or width < 10:
+            return None, None, None, None
 
         x_offset = width * ratio
         y_offset = height * ratio
@@ -22,21 +31,28 @@ class KeyPoint:
         return int(y - y_offset), int(x - x_offset) \
                , int(height + 2 * y_offset), int(width + 2 * x_offset)
 
-    def head(self, ratio=0.1):
+    def head(self, ratio=0.5):
         key_points = [self.left_ear(), self.right_ear(), 
                       self.left_eye(), self.right_eye(),
                       self.nose()]
 
-        xs = [int(key[0]) for key in key_points]
-        ys = [int(key[1]) for key in key_points]
+        xs = [int(key[0]) for key in key_points if key[2] > 0]
+        ys = [int(key[1]) for key in key_points if key[2] > 0]
+
+        if len(xs) == 0 or len(ys) == 0:
+            return None, None, None, None
 
         x = min(xs)
         y = min(ys)
 
-        height = (max(ys) - y) * 5
         width = max(xs) - x 
+        height = width * 1.6
+        
 
-        y -= height * 0.3
+        if height < 10 or width < 10:
+            return None, None, None, None
+
+        y -= height * 0.35
 
         x_offset = width * ratio
         y_offset = height * ratio
