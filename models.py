@@ -20,7 +20,8 @@ class KeyPoint:
         y = min(ys)
 
         height = max(ys) - y
-        width = max(xs) - x 
+        # width = max(xs) - x
+        width = height * 0.4
 
         if height < 10 or width < 10:
             return None, None, None, None
@@ -50,7 +51,10 @@ class KeyPoint:
         
 
         if height < 10 or width < 10:
-            return None, None, None, None
+            x, y, height, width = self.box()
+            if x is None:
+                return None, None, None, None
+            return x, y, height / 2, width
 
         y -= height * 0.35
 
