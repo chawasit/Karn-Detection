@@ -103,6 +103,9 @@ while success:
 
         data['average_confident'] = key_point.average_confident()
 
+        data['body_bounding_box'] = key_point.box()
+        data['head_bounding_box'] = key_point.head()
+
     utils.make_directory('%s/data_json' % output_path)
     with open("%s/data_json/frame_%d.json" % (output_path, count), 'w') as f:
         f.write(json.dumps(pose_result, indent=4, sort_keys=True))
