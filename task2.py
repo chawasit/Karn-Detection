@@ -1,7 +1,7 @@
 import cv2
 import json
 import glob
-import face_recognition
+# import face_recognition
 import models
 import utils
 import argparse
@@ -61,10 +61,10 @@ while success:
             utils.make_directory("%s/head/%d" % (output_path, count))
             cv2.imwrite("%s/head/%d/%d.jpg" % (output_path, count, number), head_image)
 
-            try:
-                face_features = face_recognition.face_encodings(head_image)[0].tolist()
-            except Exception as e:
-                pass
+            # try:
+            #     face_features = face_recognition.face_encodings(head_image)[0].tolist()
+            # except Exception as e:
+            #     pass
 
             data['head'] = True
 
