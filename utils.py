@@ -5,6 +5,18 @@ import os, errno
 
 
 def crop_image(image, x, y, height, width):
+    image_height, image_width, channels = image.shape 
+    if x < 0:
+        height += height
+        x = 0
+    if x + height >= image_height:
+        height = image_height - x
+    if y < 0:
+        width += y
+        y = 0
+    if y + width >= image_width:
+        width = image_width - y
+            
     return image[x:x+height, y:y+width]
 
 
