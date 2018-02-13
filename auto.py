@@ -5,12 +5,21 @@ import json
 import os
 import subprocess
 from os.path import exists, basename, join
-
+import shutil
 import utils
+
+def copytree(src, dst, symlinks=False, ignore=None):
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            shutil.copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy2(s, d)
 
 openpose_path = join(os.getcwd(), '..', 'openpose')
 feature_extractor = 'task2.py'
-track_process = 'asdf'
+track_process = '../Tracking/main.py'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("video", help="path to video folder")
@@ -45,10 +54,14 @@ if len(video_list):
             if saved_result['hash'] == result['hash']:
                 result = saved_result
 
+    final_result_output_path = "%s/final" % output_path
+    utils.make_directory(final_result_output_path)
+    final_result = open(final_result_output_path + "/20p32n0075.txt", 'w')
+
     try:
         for work in result['works']:
             video_path = work['video']
-            video_name = basename(video_path)
+            video_name = basename(video_path).split('.')[0]
 
             print "=== " + video_name + "==="
 
@@ -58,6 +71,7 @@ if len(video_list):
             openpose_output_path = "%s/openpose" % base_output_path
             extractor_output_path = "%s/extractor" % base_output_path
             tracking_output_path = "%s/tracking" % base_output_path
+            final_output_path = "%s/final/%s" % (output_path, video_name)
 
             try:
                 if not work['1_openpose']:
@@ -76,13 +90,20 @@ if len(video_list):
 
                 if not work['3_tracking']:
                     print "- [Tracking]"
-                    subprocess.call(['exit', '0'])
-
+                    subprocess.call(['python', track_process, extractor_output_path, tracking_output_path], shell=True)
+                    utils.make_directory(final_output_path)
+                    copytree(tracking_output_path + "\output\picture", final_output_path)
                     work['3_tracking'] = True
+                
+                if work['1_openpose'] and work['2_feature_extractor'] and work['3_tracking']:
+                    final_result.write(video_name+":"+str(len(glob.glob("%s/*" % final_output_path)))+"\n")
+
             except Exception as e:
                 print e
                 continue
 
     finally:
+        final_result.close()
+
         with open(result_json, 'w') as f:
             f.write(json.dumps(result, indent=2, sort_keys=True))
