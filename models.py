@@ -10,8 +10,8 @@ class KeyPoint:
         return np.average(map(lambda x: x[2], self.key_points))
 
     def box(self, ratio=0.15, image_width=None, image_height=None):
-        xs = [int(key[0]) for key in self.key_points if key[2] > 0]
-        ys = [int(key[1]) for key in self.key_points if key[2] > 0]
+        xs = [int(key[0]) for key in self.key_points if key[2] > 0.5]
+        ys = [int(key[1]) for key in self.key_points if key[2] > 0.5]
 
         if len(xs) == 0 or len(ys) == 0:
             return None, None, None, None
