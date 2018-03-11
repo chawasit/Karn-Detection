@@ -9,7 +9,7 @@ class KeyPoint:
     def average_confident(self):
         return np.average(map(lambda x: x[2], self.key_points))
 
-    def box(self, ratio=0.15):
+    def box(self, ratio=0.15, image_width=None, image_height=None):
         xs = [int(key[0]) for key in self.key_points if key[2] > 0]
         ys = [int(key[1]) for key in self.key_points if key[2] > 0]
 
@@ -25,8 +25,8 @@ class KeyPoint:
         if height < 10 or width < 10:
             return None, None, None, None
 
-        x_offset = max(width * ratio, )
-        y_offset = max(height * ratio,)
+        x_offset = max(width * ratio, image_width * 0.05 if image_width is not None else 0)
+        y_offset = max(height * ratio, image_height * 0.05 if image_height is not None else 0)
 
         return int(y - y_offset), int(x - x_offset) \
                , int(height + y_offset), int(width + x_offset)
