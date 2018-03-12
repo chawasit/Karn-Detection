@@ -40,7 +40,9 @@ while success:
     if args.frame:
         utils.make_directory("%s/frame" % output_path)
         cv2.imwrite("%s/frame/frame_%d.jpg" % (output_path, count), image)     # save frame as JPEG file
-    
+
+    height, width, channels = image.shape
+
     filename = file_list[count]
     with open(filename, 'r') as f:
         pose_result = json.loads(f.read())
@@ -53,7 +55,7 @@ while success:
         key_point = models.KeyPoint(data['pose_keypoints'])
 
         # Head
-        x, y, height, width = key_point.head()
+        x, y, height, width = key_point.head(image_height=height, image_width=width)
         face_features = []
         data['head'] = False
         if x and y:
@@ -72,7 +74,7 @@ while success:
         data['face_features'] = face_features
 
         # Body
-        x, y, height, width = key_point.box()
+        x, y, height, width = key_point.box(image_height=height, image_width=width)
         bgr_histogram = hsv_histogram = []
         data['body'] = False
         if x and y:

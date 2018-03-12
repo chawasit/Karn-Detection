@@ -31,7 +31,7 @@ class KeyPoint:
         return int(y - y_offset), int(x - x_offset) \
                , int(height + y_offset), int(width + x_offset)
 
-    def head(self, ratio=0.5):
+    def head(self, ratio=0.5, image_width=None, image_height=None):
         key_points = [self.left_ear(), self.right_ear(), 
                       self.left_eye(), self.right_eye(),
                       self.nose()]
@@ -54,7 +54,7 @@ class KeyPoint:
             # if x is None:
             #     return None, None, None, None
             # return x, y, height / 2, width
-            return self.box()
+            return self.box(image_width=image_width, image_height=image_height)
 
         y -= height * 0.35
 

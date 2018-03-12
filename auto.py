@@ -91,11 +91,11 @@ if len(video_list):
                 if not work['3_tracking']:
                     print "- [Tracking]"
                     subprocess.call(['python', track_process, extractor_output_path, tracking_output_path], shell=True)
-                    utils.make_directory(final_output_path)
-                    copytree(tracking_output_path, final_output_path)
                     work['3_tracking'] = True
                 
                 if work['1_openpose'] and work['2_feature_extractor'] and work['3_tracking']:
+                    utils.make_directory(final_output_path)
+                    copytree(tracking_output_path, final_output_path)
                     final_result.write(video_name+":"+str(len(glob.glob("%s/*" % final_output_path)))+"\n")
 
             except Exception as e:
