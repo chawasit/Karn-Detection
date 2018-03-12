@@ -209,17 +209,17 @@ def match_frame_group(frame_data_list, label_matrix, frame_group_score):
                     match_group_pairs.append([group_id1, group_id2, normalize_distance])
                 
             elif frame_different <= 0 and frame_different > -MAXIMUM_FRAME_DIFFERENCE:
-                keyframe1 = int(frame_group_starts[group_id2] - 1)
-                people_index1 = np.argwhere(label_matrix[:, keyframe1] == group_id1)[0,0]
+                keyframe1 = int(frame_group_starts[group_id2])
+                people_index1 = np.argwhere(label_matrix[:, keyframe1] == group_id2)[0,0]
                 keypoint1 = frame_data_list[keyframe1][people_index1]
 
-                keyframe2 = int(frame_group_ends[group_id1] + 1)
-                people_index2 = np.argwhere(label_matrix[:, keyframe2] == group_id2)[0,0]
+                keyframe2 = int(frame_group_ends[group_id1])
+                people_index2 = np.argwhere(label_matrix[:, keyframe2] == group_id1)[0,0]
                 keypoint2 = frame_data_list[keyframe2][people_index2]
 
                 distance, joint_overlap = dissimilarity(keypoint1, keypoint2)
 
-                normalize_distance = distance / ( -frame_different + 2)
+                normalize_distance = distance / (-frame_different + 1)
                 
                 if normalize_distance < MAXIMUM_GROUP_DISTANCE:
                     match_group_pairs.append([group_id1, group_id2, normalize_distance])
@@ -303,4 +303,3 @@ if __name__ == '__main__':
     final_label_matrix = clean_label_matrix(label_matrix, match_group_pairs)
 
     copy_result_to_output_path(final_label_matrix, max_confidence_frame_ids,output_path)
-    
