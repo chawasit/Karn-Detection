@@ -19,7 +19,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 openpose_path = join(os.getcwd(), '..', 'openpose')
 feature_extractor = 'task2.py'
-track_process = '../Tracking/main.py'
+track_process = 'task3.py'
 
 parser = argparse.ArgumentParser()
 parser.add_argument("video", help="path to video folder")
@@ -92,7 +92,7 @@ if len(video_list):
                     print "- [Tracking]"
                     subprocess.call(['python', track_process, extractor_output_path, tracking_output_path], shell=True)
                     utils.make_directory(final_output_path)
-                    copytree(tracking_output_path + "\output\picture", final_output_path)
+                    copytree(tracking_output_path, final_output_path)
                     work['3_tracking'] = True
                 
                 if work['1_openpose'] and work['2_feature_extractor'] and work['3_tracking']:

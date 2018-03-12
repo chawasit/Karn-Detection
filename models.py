@@ -10,8 +10,8 @@ class KeyPoint:
         return np.average(map(lambda x: x[2], self.key_points))
 
     def box(self, ratio=0.15, image_width=None, image_height=None):
-        xs = [int(key[0]) for key in self.key_points if key[2] > 0.5]
-        ys = [int(key[1]) for key in self.key_points if key[2] > 0.5]
+        xs = [int(key[0]) for key in self.key_points if key[2] > 0.3]
+        ys = [int(key[1]) for key in self.key_points if key[2] > 0.3]
 
         if len(xs) == 0 or len(ys) == 0:
             return None, None, None, None
@@ -22,7 +22,7 @@ class KeyPoint:
         height = max(ys) - y
         width = max(xs) - x
 
-        if height < 10 or width < 10:
+        if height < 4 or width < 4:
             return None, None, None, None
 
         x_offset = max(width * ratio, image_width * 0.05 if image_width is not None else 0)
@@ -49,7 +49,7 @@ class KeyPoint:
         height = width * 1.6
         
 
-        if height < 10 or width < 10:
+        if height < 4 or width < 4:
             # x, y, height, width = self.box()
             # if x is None:
             #     return None, None, None, None
